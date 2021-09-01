@@ -5,7 +5,6 @@ import numpy as np
 from sklearn.preprocessing import LabelBinarizer
 import torch
 from torch.utils.data import Dataset, DataLoader
-from torchvision import transforms
 from tqdm import tqdm
 
 
@@ -51,7 +50,7 @@ class MelspDataset(Dataset):
     @staticmethod
     def _load_melsp(melsp_path: pathlib.PosixPath) -> torch.Tensor:
         melsp = np.load(melsp_path)
-        return torch.from_numpy(melsp)
+        return torch.from_numpy(melsp).unsqueeze(0)
 
 
 if __name__ == '__main__':
@@ -60,4 +59,11 @@ if __name__ == '__main__':
 
     dataset = MelspDataset(root)
     melsp, label, speaker = dataset[0]
-    print(label, speaker)
+    print(melsp.shape, label.shape, speaker)
+
+    dataloader = DataLoader(dataset, batch_size=8, shuffle=True)
+
+    num_epoch = 1
+    for i in range(1, num_epoch + 1):
+        for melsp, label, speaker in tqdm(dataloader):
+            print(melsp.shape, label.shape, speaker)
