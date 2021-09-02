@@ -2,7 +2,9 @@ from pathlib import Path
 from typing import Tuple
 
 import librosa
+import librosa.display
 from librosa.filters import mel as librosa_mel_fn
+import matplotlib.pyplot as plt
 import numpy as np
 import torch
 import torch.nn as nn
@@ -11,7 +13,7 @@ import torch.nn.functional as F
 
 def load_wav(wav_path: str, sr: int = None) -> Tuple[np.ndarray, int]:
     """
-    wavファイルを読み込む関数.wav
+    wavファイルを読み込む関数.
 
     Args:
         wav_path (str): wavファイルへのパス
@@ -23,10 +25,23 @@ def load_wav(wav_path: str, sr: int = None) -> Tuple[np.ndarray, int]:
     # 音声データの読み込み
     data, sr = librosa.load(wav_path, sr=sr)
     data = data.astype(np.float)  # change to ndarray
-    print(f'sampling rate: {sr}')
-    print(f'time: {len(data) // sr} s')
+    # print(f'sampling rate: {sr}')
+    # print(f'time: {len(data) // sr} s')
 
     return data, sr
+
+
+def show_log_melsp(log_melsp: np.ndarray, sr: int) -> None:
+    """
+    メルスペクトログラムを描画する関数.
+
+    Args:
+        melsp (np.ndarray): 対数メルスペクトログラム
+        sr (int, optional): サンプリング周波数.
+    """
+    librosa.display.specshow(log_melsp.squeeze().numpy(), sr=sr, x_axis='time', y_axis='mel', hop_length=256)
+    plt.colorbar(format='%+2.0f dB')
+    plt.show()
 
 
 class Audio2Mel(nn.Module):
