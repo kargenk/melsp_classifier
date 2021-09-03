@@ -31,12 +31,30 @@ def load_wav(wav_path: str, sr: int = None) -> Tuple[np.ndarray, int]:
     return data, sr
 
 
-def show_log_melsp(log_melsp: np.ndarray, sr: int) -> None:
+def calc_log_melsp(wav_array: np.ndarray) -> torch.Tensor:
+    """
+    wavデータからメルスペクトログラムを計算する関数.
+
+    Args:
+        wav_array (np.ndarray): wavデータ
+
+    Returns:
+        torch.Tensor: メルスペクトログラム
+    """
+    fft = Audio2Mel()
+
+    # tensorに変換，nn.Moduleで扱えるようにバッチの次元を追加
+    wav_tensor = torch.from_numpy(wav_array).float().unsqueeze(0)
+    log_melsp = fft(wav_tensor.unsqueeze(0))  # 内部でpaddingを行うため，2Dの次元を追加
+    return log_melsp.squeeze()
+
+
+def show_log_melsp(log_melsp: torch.Tensor, sr: int) -> None:
     """
     メルスペクトログラムを描画する関数.
 
     Args:
-        melsp (np.ndarray): 対数メルスペクトログラム
+        melsp (torch.Tensor): 対数メルスペクトログラム
         sr (int, optional): サンプリング周波数.
     """
     librosa.display.specshow(log_melsp.squeeze().numpy(), sr=sr, x_axis='time', y_axis='mel', hop_length=256)

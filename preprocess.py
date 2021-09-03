@@ -5,7 +5,7 @@ import numpy as np
 import torch
 from tqdm import tqdm
 
-from sound_util import Audio2Mel, load_wav, show_log_melsp
+from sound_util import load_wav, show_log_melsp, calc_log_melsp
 
 
 def save_log_melsp(root_dir: pathlib.PosixPath, save_dir: pathlib.PosixPath) -> None:
@@ -17,7 +17,6 @@ def save_log_melsp(root_dir: pathlib.PosixPath, save_dir: pathlib.PosixPath) -> 
         save_dir (pathlib.PosixPath): 保存先ディレクトリのパスオブジェクト
     """
     FRAMES = 128
-    fft = Audio2Mel()
 
     data_dirs = list(root_dir.iterdir())
     for data_dir in tqdm(data_dirs):
@@ -26,12 +25,10 @@ def save_log_melsp(root_dir: pathlib.PosixPath, save_dir: pathlib.PosixPath) -> 
         wav_paths = list(data_dir.iterdir())
         for wav_index, wav_path in enumerate(wav_paths):
             wav_array, sr = load_wav(wav_path)
-            # tensorに変換，nn.Moduleで扱えるようにバッチの次元を追加
-            wav_tensor = torch.from_numpy(wav_array).float().unsqueeze(0)
-            log_melsp = fft(wav_tensor.unsqueeze(0))  # 内部でpaddingを行うため，2Dの次元を追加
-            log_melsp = log_melsp.squeeze().numpy()
+            log_melsp = calc_log_melsp(wav_array)
             # print(log_melsp.shape)
             # show_log_melsp(log_melsp, sr)
+            # break
 
             # 128フレームずつに分けて保存
             file_name = f'{speaker}_{wav_index}'
