@@ -10,13 +10,14 @@ from sound_util import load_wav, show_log_melsp, calc_log_melsp
 
 def save_log_melsp(root_dir: pathlib.PosixPath, save_dir: pathlib.PosixPath) -> None:
     """
-    対数メルスペクトログラムを保存する関数.
+    64フレームずつ移動しながら，128フレームのサイズの対数メルスペクトログラムを保存する関数.
 
     Args:
         root_dir (pathlib.PosixPath): 音声データディレクトリのパスオブジェクト
         save_dir (pathlib.PosixPath): 保存先ディレクトリのパスオブジェクト
     """
-    FRAMES = 128
+    FRAMES = 128     # フレーム数
+    hop_length = 64  # 移動幅
 
     data_dirs = list(root_dir.iterdir())
     for data_dir in tqdm(data_dirs):
@@ -26,13 +27,10 @@ def save_log_melsp(root_dir: pathlib.PosixPath, save_dir: pathlib.PosixPath) -> 
         for wav_index, wav_path in enumerate(wav_paths):
             wav_array, sr = load_wav(wav_path)
             log_melsp = calc_log_melsp(wav_array)
-            # print(log_melsp.shape)
-            # show_log_melsp(log_melsp, sr)
-            # break
 
-            # 128フレームずつに分けて保存
+            # 64フレームずつ移動しながら128フレームのサイズに分けて保存
             file_name = f'{speaker}_{wav_index}'
-            for start_idx in range(0, log_melsp.shape[1] - FRAMES + 1, FRAMES):
+            for start_idx in range(0, log_melsp.shape[1] - FRAMES + 1, hop_length):
                 one_audio_seg = log_melsp[:, start_idx: start_idx + FRAMES]
 
                 if one_audio_seg.shape[1] == FRAMES:
