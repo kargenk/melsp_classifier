@@ -34,7 +34,7 @@ class MelspDataset(Dataset):
         speaker = melsp_path.stem[:6]
         label = self.encoder.transform([speaker])[0]
         label = torch.FloatTensor(label)
-        return label
+        return label.argmax(dim=0)
 
     # ================================================================================
     #
@@ -54,16 +54,17 @@ class MelspDataset(Dataset):
 
 
 if __name__ == '__main__':
-    root = Path.home().joinpath('datasets/jvs_music/processed_logmel/')
+    root = Path.cwd().joinpath('data/log_melsp/aug')
     print(root)
 
     dataset = MelspDataset(root)
     melsp, label, speaker = dataset[0]
-    print(melsp.shape, label.shape, speaker)
+    print(melsp.shape, label, speaker)
 
     dataloader = DataLoader(dataset, batch_size=8, shuffle=True)
 
     num_epoch = 1
     for i in range(1, num_epoch + 1):
         for melsp, label, speaker in tqdm(dataloader):
-            print(melsp.shape, label.shape, speaker)
+            print(melsp.shape, label, speaker)
+            break

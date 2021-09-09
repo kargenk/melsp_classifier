@@ -1,13 +1,6 @@
-from pathlib import Path
-
 import torch
 import torch.nn as nn
-import torch.optim as optim
-from torch.utils.data import DataLoader
 from torchinfo import summary
-from tqdm import tqdm
-
-from dataloader import MelspDataset
 
 
 class ConvBN(nn.Module):
@@ -62,7 +55,7 @@ class MelspClassifier(nn.Module):
         )
         self.classification = nn.Sequential(
             nn.Linear(128, 7),
-            nn.Softmax(dim=1)
+            # nn.Softmax(dim=1)
         )
 
     def forward(self, x):
