@@ -11,7 +11,7 @@ from tqdm import tqdm
 class MelspDataset(Dataset):
 
     def __init__(self, melsp_dir: pathlib.PosixPath,
-                 speakers: list = ['jvs001', 'jvs010', 'jvs015', 'jvs018', 'jvs037', 'jvs076'],
+                 speakers: list = ['jvs001', 'jvs010', 'jvs015', 'jvs018', 'jvs037', 'jvs076', 'jvsxxx'],
                  train: bool = True):
         self.melsp_paths = self._make_melsp_paths(melsp_dir)
         self.n_melsp = len(self.melsp_paths)
@@ -54,7 +54,7 @@ class MelspDataset(Dataset):
 
 
 if __name__ == '__main__':
-    root = Path.cwd().joinpath('data/log_melsp/aug')
+    root = Path.cwd().joinpath('data/log_melsp/train')
     print(root)
 
     dataset = MelspDataset(root)

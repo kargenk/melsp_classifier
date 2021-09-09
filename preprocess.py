@@ -132,8 +132,8 @@ def save_log_melsp(root_dir: pathlib.PosixPath, save_dir: pathlib.PosixPath) -> 
 
 
 if __name__ == '__main__':
-    root_dir = Path.cwd().joinpath('data/audio')
-    save_dir = Path.cwd().joinpath('data/log_melsp/aug')
+    root_dir = Path.cwd().joinpath('data/audio/')
+    save_dir = Path.cwd().joinpath('data/log_melsp/')
     if not save_dir.exists():
         save_dir.mkdir()
 

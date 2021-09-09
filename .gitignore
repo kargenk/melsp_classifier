@@ -130,5 +130,6 @@ dmypy.json
 
 data/
 models/
+logs/
 .DS_Store
 .virtual_documents/

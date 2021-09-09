@@ -7,13 +7,14 @@ from torch.utils.data import DataLoader, random_split
 from tqdm import tqdm
 
 from dataloader import MelspDataset
+from logger import Logger
 from model import MelspClassifier
 
 
-def train_model(model, dataloaders_dict, criterion, optimizer, num_epochs):
+def train_model(model, dataloaders_dict, criterion, optimizer, logger, num_epochs):
     best_val_acc = 0.0
     for epoch in range(1, num_epochs + 1):
-        print(f'Epoch {epoch + 1}/{num_epochs}')
+        print(f'Epoch {epoch}/{num_epochs}')
         print('-' * 20)
 
         for phase in ['train', 'val']:
@@ -30,7 +31,7 @@ def train_model(model, dataloaders_dict, criterion, optimizer, num_epochs):
                 with torch.set_grad_enabled(phase == 'train'):
                     outputs = model(melsps)
                     loss = criterion(outputs, labels)
-                    _, preds = torch.max(outputs, 1)
+                    _, preds = torch.max(outputs, 1)  # 最も値が大きいインデックスが予測したクラス
 
                     # 訓練時のみ逆伝播して更新
                     if phase == 'train':
@@ -45,6 +46,10 @@ def train_model(model, dataloaders_dict, criterion, optimizer, num_epochs):
             epoch_loss = epoch_loss / num_data
             epoch_acc = epoch_corrects.double() / num_data
             print(f'{phase} Loss: {epoch_loss:.4f} Accuracy: {epoch_acc:.4f}')
+
+            # TensorBoardのログに表示
+            logger.scalar_summary(f'{phase}/loss', epoch_loss, epoch)
+            logger.scalar_summary(f'{phase}/accuracy', epoch_acc, epoch)
 
             # validationデータでのaccuracyが上がればそのモデルを保存
             if phase == 'val' and epoch_acc > best_val_acc:
@@ -77,5 +82,7 @@ if __name__ == '__main__':
     model = MelspClassifier()
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.Adam(model.parameters())
+    logger = Logger('logs')
+    logger.model_summary(model, torch.empty((1, 1, 80, 128)))
 
-    train_model(model, dataloaders_dict, criterion, optimizer, 1)
+    train_model(model, dataloaders_dict, criterion, optimizer, logger, 1)
