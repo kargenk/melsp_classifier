@@ -129,5 +129,6 @@ dmypy.json
 .pyre/
 
 data/
+models/
 .DS_Store
 .virtual_documents/
