@@ -1,0 +1,8 @@
+librosa==0.8.0
+matplotlib==3.3.3
+numpy==1.19.4
+scikit-learn==0.23.2
+tensorboard==2.5.0
+torch==1.8.1
+torchinfo==1.5.3
+tqdm==4.55.0
